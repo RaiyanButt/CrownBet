@@ -102,7 +102,6 @@ static int spinSymbol(RNG& rng) {
 }
 
 static int computeMultiplier(int a, int b, int c) {
-    // Simple payout table:
     // 3 Sevens  = 10x
     // 3 Bars    =  6x
     // 3 Bells   =  4x
