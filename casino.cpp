@@ -367,9 +367,18 @@ static void playBlackjack(Wallet& wallet, RNG& rng)
 
     wallet.debit(bet);
     auto drawCard = [&rng]() { return rng.uniformInt(1, 11); };
-    int playerTotal = drawCard() + drawCard();
-    int dealerTotal = drawCard() + drawCard();
+
+    int playerCard1 = drawCard();
+    int playerCard2 = drawCard();
+    int dealerCard1 = drawCard(); // visible
+    int dealerCard2 = drawCard(); // hidden
+
+    int playerTotal = playerCard1 + playerCard2;
+    int dealerTotal = dealerCard1 + dealerCard2;
+    std::cout << "Dealer shows: [" << dealerCard1 << "] [ ? ]\n";
     std::cout << "\nYour initial total: " << playerTotal << "\n";
+    std::cout << "Your total: " << playerTotal << "\n";
+    
     std::string action;
 
     while (playerTotal < 21) 
