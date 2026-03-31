@@ -240,7 +240,7 @@ static void printBlackjackInstructions()
 /**
  * @brief Displays the instructions for the rocket crash game.
  */
-static void printRocketManInstructions() 
+static void printCrashInstructions() 
 {
     std::cout << "\n--- Rocket Crash Instructions ---\n";
     std::cout << "In the crash game, a multiplier increases over time.\n\n";
@@ -367,17 +367,8 @@ static void playBlackjack(Wallet& wallet, RNG& rng)
 
     wallet.debit(bet);
     auto drawCard = [&rng]() { return rng.uniformInt(1, 11); };
-    int playerCard1 = drawCard();
-    int playerCard2 = drawCard();
-    int dealerCard1 = drawCard(); // visible
-    int dealerCard2 = drawCard(); // hidden
-
-    int playerTotal = playerCard1 + playerCard2;
-    int dealerTotal = dealerCard1 + dealerCard2;
-    // Show cards
-    std::cout << "Dealer shows: [" << dealerCard1 << "] [ ? ]\n";
-    std::cout << "Your cards: [" << playerCard1 << "] [" << playerCard2 << "]\n";
-    std::cout << "Your total: " << playerTotal << "\n";
+    int playerTotal = drawCard() + drawCard();
+    int dealerTotal = drawCard() + drawCard();
     std::cout << "\nYour initial total: " << playerTotal << "\n";
     std::string action;
 
@@ -420,19 +411,19 @@ static void playBlackjack(Wallet& wallet, RNG& rng)
  * @param wallet Reference to the player's wallet.
  * @param rng Random number generator.
  */
-static void playRocketMan(Wallet& wallet, RNG& rng) 
+static void playCrash(Wallet& wallet, RNG& rng) 
 {
     int bet = promptBet(wallet);
     if (bet == 0) return;
     wallet.debit(bet);
     double multiplier = 1.0;
-    double crashPoint = rng.uniformInt(3, 20.0) / 2.0;
+    double crashPoint = rng.uniformDouble(1.5, 10.0);
     std::string input;
     std::cout << "\nMultiplier starts at 1.00x\n";
 
     while (true) 
     {
-        std::cout << "Type Stop to cashout or press Enter to keep the Rocket going...";
+        std::cout << "Press Enter to cash out or wait for multiplier to increase...";
         std::getline(std::cin, input);
 
         if (!input.empty() || multiplier >= crashPoint) break;
@@ -466,7 +457,7 @@ static void printLobby(const Wallet& wallet)
     std::cout << "Balance: " << wallet.balance() << " coins\n";
     std::cout << "1) Play Slots\n2) Slots Instructions\n";
     std::cout << "3) Play Blackjack\n4) Blackjack Instructions\n";
-    std::cout << "5) Play RocketMan\n6) Rocket Crash Instructions\n";
+    std::cout << "5) Play Rocket Crash\n6) Rocket Crash Instructions\n";
     std::cout << "7) Quit\n";
 }
 
@@ -510,8 +501,8 @@ int main(int argc, char** argv)
         else if (choice == 2) printSlotsInstructions();
         else if (choice == 3) playBlackjack(wallet, rng);
         else if (choice == 4) printBlackjackInstructions();
-        else if (choice == 5) playRocketMan(wallet, rng);
-        else if (choice == 6) printRocketManInstructions();
+        else if (choice == 5) playCrash(wallet, rng);
+        else if (choice == 6) printCrashInstructions();
         else if (choice == 7) { std::cout << "Thanks for playing!\n"; break; }
         else std::cout << "Invalid option.\n";
     }
