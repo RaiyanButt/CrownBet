@@ -70,7 +70,6 @@ GROUP35/
 - 🎰 **Slots** — Full slots experience with crown wagering and win logic
 - ✈️ **Rocketman** — Crash-style game with crown betting
 - 🃏 **Blackjack** — Classic card game against the house
-- 📜 **Rulesets** — In-app rules screen for each game
 - 🎲 **Custom RNG** — Dedicated random number generation module
 
 ---
