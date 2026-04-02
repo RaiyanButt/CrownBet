@@ -4,8 +4,22 @@
 #include <sstream>
 #include <string>
 
-namespace {
+namespace 
+{
 
+/**
+ * @brief Formats a multiplier value as a display string.
+ *
+ * This helper function converts a multiplier into a fixed-point string
+ * with two decimal places and appends an 'x' suffix so it can be shown
+ * clearly on the crash game screen.
+ *
+ * @param v The multiplier value to format.
+ *
+ * @return A formatted multiplier string.
+ *
+ * @author Daniel
+ */
 std::string formatMultiplier(double v)
 {
     std::ostringstream os;
@@ -16,6 +30,17 @@ std::string formatMultiplier(double v)
 
 } // namespace
 
+/**
+ * @brief Constructs a CrashScreen object.
+ *
+ * This constructor initializes the crash screen interface, including
+ * buttons, text labels, display panels, and the rocket shape used
+ * during gameplay.
+ *
+ * @param font The font used to render all text on the crash screen.
+ *
+ * @author Daniel
+ */
 CrashScreen::CrashScreen(sf::Font& font)
     : rocket_(3),
       betMinus_({75.f, 52.f}, {420.f, 548.f}, sf::Color(220, 220, 220), "-", font, 32),
@@ -72,64 +97,135 @@ CrashScreen::CrashScreen(sf::Font& font)
     rocket_.setPoint(0, sf::Vector2f(0.f, -42.f));
     rocket_.setPoint(1, sf::Vector2f(20.f, 26.f));
     rocket_.setPoint(2, sf::Vector2f(-20.f, 26.f));
-    // Origin at the tip so setPosition() is the tip in world space (clear gap below panel top).
     rocket_.setOrigin(0.f, -42.f);
     rocket_.setFillColor(sf::Color(220, 85, 70));
     rocket_.setOutlineThickness(2.f);
     rocket_.setOutlineColor(sf::Color(140, 40, 35));
 }
 
+/**
+ * @brief Handles actions required before leaving the crash screen.
+ *
+ * This function ensures that the current round is properly finalized
+ * when the user navigates away from the crash screen. If a round is
+ * active, it cashes out automatically; if the round is already over,
+ * it resets the game state.
+ *
+ * @param wallet The player's wallet used for cashing out if necessary.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void CrashScreen::onNavigateAway(Wallet& wallet)
 {
-    if (game_.phase() == CrashPhase::Flying) {
+    if (game_.phase() == CrashPhase::Flying) 
+    {
         game_.cashOut(wallet);
-    } else if (game_.phase() == CrashPhase::RoundOver) {
+    } else if (game_.phase() == CrashPhase::RoundOver) 
+    {
         game_.acknowledgeRound();
     }
 }
 
+/**
+ * @brief Handles mouse click input on the crash screen.
+ *
+ * This function processes clicks on the betting controls and main action
+ * button. Depending on the game phase, it may adjust the bet, launch a
+ * round, cash out an active round, or advance to the next round.
+ *
+ * @param p The position of the mouse click.
+ * @param wallet The player's wallet used for betting and payouts.
+ * @param rng The random number generator used to start a round.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void CrashScreen::onMouseClick(const sf::Vector2f& p, Wallet& wallet, RNG& rng)
 {
-    if (betMinus_.contains(p)) {
+    if (betMinus_.contains(p)) 
+    {
         game_.decreaseBet();
         return;
     }
-    if (betPlus_.contains(p)) {
+    if (betPlus_.contains(p)) 
+    {
         game_.increaseBet(wallet);
         return;
     }
-    if (!mainBtn_.contains(p)) {
+    if (!mainBtn_.contains(p)) 
+    {
         return;
     }
-    if (game_.phase() == CrashPhase::Idle) {
-        if (game_.startRound(wallet, rng)) {
+    if (game_.phase() == CrashPhase::Idle) 
+    {
+        if (game_.startRound(wallet, rng)) 
+        {
             tickClock_.restart();
         }
-    } else if (game_.phase() == CrashPhase::Flying) {
+    } else if (game_.phase() == CrashPhase::Flying) 
+    {
         game_.cashOut(wallet);
-    } else {
+    } 
+    else 
+    {
         game_.acknowledgeRound();
     }
 }
 
+/**
+ * @brief Updates the crash screen state.
+ *
+ * This function keeps the selected bet valid relative to the wallet,
+ * advances the crash game while a round is active, and updates the
+ * main button text to match the current phase of gameplay.
+ *
+ * @param wallet The player's wallet used to validate the current bet.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void CrashScreen::update(const Wallet& wallet)
 {
     game_.clampBetToWallet(wallet);
-    if (game_.phase() == CrashPhase::Flying) {
-        if (tickClock_.getElapsedTime().asSeconds() >= (5.f / 11.f)) {
+    if (game_.phase() == CrashPhase::Flying) 
+    {
+        if (tickClock_.getElapsedTime().asSeconds() >= (5.f / 11.f)) 
+        {
             tickClock_.restart();
             game_.tick();
         }
     }
-    if (game_.phase() == CrashPhase::Idle) {
+    if (game_.phase() == CrashPhase::Idle) 
+    {
         mainBtn_.setText("LAUNCH");
-    } else if (game_.phase() == CrashPhase::Flying) {
+    } 
+    else if (game_.phase() == CrashPhase::Flying) 
+    {
         mainBtn_.setText("CASH OUT");
-    } else {
+    } 
+    else 
+    {
         mainBtn_.setText("NEXT ROUND");
     }
 }
 
+/**
+ * @brief Updates button hover effects on the crash screen.
+ *
+ * This function changes button colors based on the current mouse
+ * position to provide visual feedback when the user hovers over
+ * interactive controls.
+ *
+ * @param mouse The current mouse position.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void CrashScreen::updateHover(const sf::Vector2f& mouse)
 {
     betMinus_.setFillColor(betMinus_.contains(mouse) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
@@ -137,6 +233,19 @@ void CrashScreen::updateHover(const sf::Vector2f& mouse)
     mainBtn_.setFillColor(mainBtn_.contains(mouse) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
 }
 
+/**
+ * @brief Draws the crash screen and all interface elements.
+ *
+ * This function renders the main crash panel, instructional text,
+ * current multiplier, game status message, betting controls, rocket
+ * graphic, and the primary action button.
+ *
+ * @param window The render window used to display the crash screen.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void CrashScreen::draw(sf::RenderWindow& window)
 {
     constexpr float cx = 640.f;
@@ -164,14 +273,20 @@ void CrashScreen::draw(sf::RenderWindow& window)
     centerTextAt(mult_, cx, 298.f);
 
     std::string msg;
-    if (game_.phase() == CrashPhase::Idle) {
+    if (game_.phase() == CrashPhase::Idle) 
+    {
         msg = "Use +/- to set bet, then LAUNCH.";
-    } else if (game_.phase() == CrashPhase::Flying) {
+    } 
+    else if (game_.phase() == CrashPhase::Flying) 
+    {
         const int preview = static_cast<int>(static_cast<double>(game_.roundBet()) * game_.multiplier());
         msg = "CASH OUT now for " + std::to_string(preview) + " coins.";
-    } else if (game_.lastOutcome() == CrashOutcome::CashedOut) {
+    } 
+    else if (game_.lastOutcome() == CrashOutcome::CashedOut) {
         msg = "Cashed at " + formatMultiplier(game_.multiplier()) + " - +" + std::to_string(game_.lastPayout()) + " coins.";
-    } else {
+    } 
+    else 
+    {
         msg = "Crashed at " + formatMultiplier(game_.crashPoint()) + " - bet lost.";
     }
     status_.setString(msg);
@@ -188,7 +303,6 @@ void CrashScreen::draw(sf::RenderWindow& window)
     window.draw(subLine1_);
     window.draw(subLine2_);
     window.draw(subLine3_);
-    // Panel top y=128, ~4px gold stroke; keep tip clearly below inner edge (~22px gap).
     rocket_.setPosition(cx, 158.f);
     window.draw(rocket_);
     window.draw(mult_);

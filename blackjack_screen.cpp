@@ -3,23 +3,58 @@
 #include <string>
 #include <vector>
 
-namespace {
+namespace 
+{
 
 constexpr float kCardW = 58.f;
 constexpr float kCardH = 82.f;
 constexpr float kCardGap = 10.f;
 
+/**
+ * @brief Converts a blackjack card into a display string.
+ *
+ * This helper function determines what text should appear on a rendered card.
+ * If the card is face down, it returns a placeholder symbol. Otherwise, it
+ * returns "A" for an ace or the numeric value of the card.
+ *
+ * @param c The blackjack card being converted.
+ * @param faceDown Indicates whether the card should be shown face down.
+ *
+ * @return A string representing the visible face of the card.
+ *
+ * @author Alexander
+ */
 std::string cardFaceString(const BlackjackCard& c, bool faceDown)
 {
-    if (faceDown) {
+    if (faceDown)
+    {
         return "?";
     }
-    if (c.isAce) {
+    if (c.isAce) 
+    {
         return "A";
     }
     return std::to_string(c.value);
 }
 
+/**
+ * @brief Draws a single blackjack card on the screen.
+ *
+ * This helper function renders one card at the given screen position using
+ * the provided font. It adjusts the card appearance depending on whether the
+ * card is face down or face up.
+ *
+ * @param window The render window used for drawing.
+ * @param font The font used to render the card text.
+ * @param x The x-coordinate where the card should be drawn.
+ * @param y The y-coordinate where the card should be drawn.
+ * @param c The blackjack card to render.
+ * @param faceDown Indicates whether the card should be hidden.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void drawOneCard(sf::RenderWindow& window,
     sf::Font& font,
     float x,
@@ -29,10 +64,14 @@ void drawOneCard(sf::RenderWindow& window,
 {
     sf::RectangleShape card(sf::Vector2f(kCardW, kCardH));
     card.setPosition(x, y);
-    if (faceDown) {
+
+    if (faceDown) 
+    {
         card.setFillColor(sf::Color(38, 48, 72));
         card.setOutlineColor(sf::Color(90, 100, 130));
-    } else {
+    } \
+    else 
+    {
         card.setFillColor(sf::Color(252, 252, 255));
         card.setOutlineColor(sf::Color(35, 35, 42));
     }
@@ -47,12 +86,31 @@ void drawOneCard(sf::RenderWindow& window,
     valueText.setStyle(sf::Text::Bold);
     valueText.setFillColor(faceDown ? sf::Color(230, 235, 245) : sf::Color(28, 28, 36));
 
+
     const sf::FloatRect b = valueText.getLocalBounds();
     valueText.setOrigin(b.left + b.width * 0.5f, b.top + b.height * 0.5f);
     valueText.setPosition(x + kCardW * 0.5f, y + kCardH * 0.5f);
     window.draw(valueText);
 }
 
+/**
+ * @brief Draws a horizontal row of blackjack cards.
+ *
+ * This helper function renders all cards in a hand centered around the given
+ * horizontal position. It can optionally hide the dealer's second card to
+ * represent the hole card during gameplay.
+ *
+ * @param window The render window used for drawing.
+ * @param font The font used for rendering card text.
+ * @param centerX The horizontal center point of the hand.
+ * @param topY The vertical position of the hand.
+ * @param hand The vector of blackjack cards to draw.
+ * @param hideSecondAsHole Indicates whether the second card should be hidden.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void drawHandRow(sf::RenderWindow& window,
     sf::Font& font,
     float centerX,
@@ -60,7 +118,8 @@ void drawHandRow(sf::RenderWindow& window,
     const std::vector<BlackjackCard>& hand,
     bool hideSecondAsHole)
 {
-    if (hand.empty()) {
+    if (hand.empty()) 
+    {
         return;
     }
 
@@ -68,16 +127,31 @@ void drawHandRow(sf::RenderWindow& window,
     const float rowW = static_cast<float>(n) * kCardW + static_cast<float>(n - 1) * kCardGap;
     float x = centerX - rowW * 0.5f;
 
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) 
+    {
         const bool faceDown = hideSecondAsHole && (i == 1);
         drawOneCard(window, font, x, topY, hand[i], faceDown);
         x += kCardW + kCardGap;
     }
 }
 
+/**
+ * @brief Builds the current status message for the blackjack screen.
+ *
+ * This helper function returns the text shown to the player based on the
+ * current phase and outcome of the blackjack game. It provides either gameplay
+ * instructions or a result message after a round ends.
+ *
+ * @param g The blackjack game whose state is being described.
+ *
+ * @return A string containing the current status message.
+ *
+ * @author Alexander
+ */
 std::string statusLine(const BlackjackGame& g)
 {
-    switch (g.phase()) {
+    switch (g.phase()) 
+    {
     case BlackjackPhase::Idle:
         return "Set bet with +/- then press DEAL.";
     case BlackjackPhase::PlayerTurn:
@@ -86,9 +160,11 @@ std::string statusLine(const BlackjackGame& g)
         break;
     }
 
-    switch (g.outcome()) {
+    switch (g.outcome()) 
+    {
     case BlackjackOutcome::Win:
-        if (g.lastWinWasBlackjack()) {
+        if (g.lastWinWasBlackjack()) 
+        {
             return "Blackjack pays 2 to 1! Payout " + std::to_string(g.lastPayout()) + " coins.";
         }
         return "You win! Payout " + std::to_string(g.lastPayout()) + " coins (1 to 1).";
@@ -101,9 +177,23 @@ std::string statusLine(const BlackjackGame& g)
     }
 }
 
+/**
+ * @brief Builds the caption showing the player's current hand total.
+ *
+ * This helper function returns a formatted string containing the player's
+ * total hand value. If the player has no cards, it returns an empty string
+ * so that no caption is shown.
+ *
+ * @param g The blackjack game whose player total is being displayed.
+ *
+ * @return A formatted total string for the player's hand.
+ *
+ * @author Alexander
+ */
 std::string playerTotalCaption(const BlackjackGame& g)
 {
-    if (g.playerCards().empty()) {
+    if (g.playerCards().empty()) 
+    {
         return "";
     }
     return "Total " + std::to_string(g.playerTotal());
@@ -111,6 +201,17 @@ std::string playerTotalCaption(const BlackjackGame& g)
 
 } // namespace
 
+/**
+ * @brief Constructs a BlackjackScreen object.
+ *
+ * This constructor initializes the blackjack screen and all of its visual
+ * components, including buttons, labels, panels, and rule text. It also
+ * stores the font used for rendering screen elements.
+ *
+ * @param font The font used to draw all text on the blackjack screen.
+ *
+ * @author Alexander
+ */
 BlackjackScreen::BlackjackScreen(sf::Font& font)
     : font_(font),
       betMinus_({75.f, 52.f}, {420.f, 578.f}, sf::Color(220, 220, 220), "-", font, 32),
@@ -204,55 +305,123 @@ BlackjackScreen::BlackjackScreen(sf::Font& font)
     betLabel_.setStyle(sf::Text::Bold);
 }
 
+/**
+ * @brief Updates the blackjack screen state.
+ *
+ * This function performs per-frame updates related to the blackjack screen.
+ * It currently ensures that the game's bet remains valid relative to the
+ * player's wallet balance.
+ *
+ * @param wallet The player's wallet used to validate the current bet.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void BlackjackScreen::update(const Wallet& wallet)
 {
     game_.clampBetToWallet(wallet);
 }
 
+/**
+ * @brief Handles actions required before leaving the blackjack screen.
+ *
+ * This function ensures that an active round is resolved before navigating
+ * away. If a round is already over, it resets the game so the screen can be
+ * cleanly revisited later.
+ *
+ * @param wallet The player's wallet used for resolving the round if needed.
+ * @param rng The random number generator used when resolving dealer actions.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void BlackjackScreen::onNavigateAway(Wallet& wallet, RNG& rng)
 {
-    if (game_.phase() == BlackjackPhase::PlayerTurn) {
+    if (game_.phase() == BlackjackPhase::PlayerTurn) 
+    {
         game_.stand(wallet, rng);
     }
-    if (game_.phase() == BlackjackPhase::RoundOver) {
+
+    if (game_.phase() == BlackjackPhase::RoundOver) 
+    {
         game_.newHand();
     }
 }
 
+/**
+ * @brief Handles mouse click interactions on the blackjack screen.
+ *
+ * This function checks which control was clicked and performs the appropriate
+ * action based on the current phase of the game. It supports changing the bet,
+ * dealing a hand, hitting, standing, and starting a new hand.
+ *
+ * @param p The mouse position where the click occurred.
+ * @param wallet The player's wallet used for betting and payouts.
+ * @param rng The random number generator used for card draws.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void BlackjackScreen::onMouseClick(const sf::Vector2f& p, Wallet& wallet, RNG& rng)
 {
-    if (betMinus_.contains(p)) {
+    if (betMinus_.contains(p)) 
+    {
         game_.decreaseBet();
         return;
     }
-    if (betPlus_.contains(p)) {
+
+    if (betPlus_.contains(p)) 
+    {
         game_.increaseBet(wallet);
         return;
     }
 
-    if (game_.phase() == BlackjackPhase::Idle) {
-        if (dealBtn_.contains(p)) {
+    if (game_.phase() == BlackjackPhase::Idle) 
+    {
+        if (dealBtn_.contains(p)) 
+        {
             game_.deal(wallet, rng);
         }
         return;
     }
 
-    if (game_.phase() == BlackjackPhase::PlayerTurn) {
-        if (hitBtn_.contains(p)) {
+    if (game_.phase() == BlackjackPhase::PlayerTurn) 
+    {
+        if (hitBtn_.contains(p)) 
+        {
             game_.hit(wallet, rng);
-        } else if (standBtn_.contains(p)) {
+        } 
+        else if (standBtn_.contains(p)) 
+        {
             game_.stand(wallet, rng);
         }
         return;
     }
 
-    if (game_.phase() == BlackjackPhase::RoundOver) {
-        if (newHandBtn_.contains(p)) {
+    if (game_.phase() == BlackjackPhase::RoundOver) 
+    {
+        if (newHandBtn_.contains(p)) 
+        {
             game_.newHand();
         }
     }
 }
 
+/**
+ * @brief Updates button hover effects based on the mouse position.
+ *
+ * This function changes the fill colors of interactive buttons to provide
+ * visual feedback when the user hovers the mouse over them.
+ *
+ * @param mouse The current mouse position.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void BlackjackScreen::updateHover(const sf::Vector2f& mouse)
 {
     betMinus_.setFillColor(betMinus_.contains(mouse) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
@@ -264,6 +433,19 @@ void BlackjackScreen::updateHover(const sf::Vector2f& mouse)
     newHandBtn_.setFillColor(newHandBtn_.contains(mouse) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
 }
 
+/**
+ * @brief Draws the blackjack screen and all of its UI elements.
+ *
+ * This function renders the table layout, rule text, player and dealer cards,
+ * betting interface, status text, and the appropriate action buttons based on
+ * the current game phase.
+ *
+ * @param window The render window used to display the blackjack screen.
+ *
+ * @return None.
+ *
+ * @author Alexander
+ */
 void BlackjackScreen::draw(sf::RenderWindow& window)
 {
     constexpr float cx = 640.f;
@@ -273,7 +455,8 @@ void BlackjackScreen::draw(sf::RenderWindow& window)
     constexpr float playerTotalY = playerCardTop + kCardH + 28.f;
     constexpr float statusY = playerTotalY + 36.f;
 
-    auto centerTextAt = [](sf::Text& t, float x, float y) {
+    auto centerTextAt = [](sf::Text& t, float x, float y) 
+    {
         const sf::FloatRect b = t.getLocalBounds();
         t.setOrigin(b.left + b.width * 0.5f, b.top + b.height * 0.5f);
         t.setPosition(x, y);
@@ -302,7 +485,8 @@ void BlackjackScreen::draw(sf::RenderWindow& window)
     window.draw(payRulesLine3_);
 
     constexpr float feltRightInner = 140.f + 1000.f - 15.f;
-    auto placeRightEdge = [](sf::Text& t, float rightX, float topY) {
+    auto placeRightEdge = [](sf::Text& t, float rightX, float topY) 
+    {
         const sf::FloatRect b = t.getLocalBounds();
         t.setOrigin(b.left + b.width, 0.f);
         t.setPosition(rightX, topY);
@@ -330,12 +514,17 @@ void BlackjackScreen::draw(sf::RenderWindow& window)
     window.draw(betLabel_);
     betPlus_.draw(window);
 
-    if (game_.phase() == BlackjackPhase::Idle) {
+    if (game_.phase() == BlackjackPhase::Idle) 
+    {
         dealBtn_.draw(window);
-    } else if (game_.phase() == BlackjackPhase::PlayerTurn) {
+    } 
+    else if (game_.phase() == BlackjackPhase::PlayerTurn) 
+    {
         hitBtn_.draw(window);
         standBtn_.draw(window);
-    } else {
+    } 
+    else 
+    {
         newHandBtn_.draw(window);
     }
 }

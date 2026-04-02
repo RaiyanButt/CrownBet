@@ -11,13 +11,27 @@
 #include "slots_render.hpp"
 #include "wallet.hpp"
 
+/**
+ * @brief Entry point of the CrownBet casino application.
+ *
+ * This function initializes the main SFML window, loads required assets,
+ * creates all game screens and shared game objects, and runs the main
+ * application loop. It handles user input, updates the active screen,
+ * manages screen navigation, and renders the appropriate interface for
+ * the main menu, slots, blackjack, and crash games.
+ *
+ * @return Exit status code indicating whether the program ended successfully.
+ *
+ * @author Raiyan
+ */
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "CrownBet");
     window.setFramerateLimit(60);
 
     sf::Font font;
-    if (!font.loadFromFile("assets/Geneva.ttf")) {
+    if (!font.loadFromFile("assets/Geneva.ttf")) 
+    {
         std::cerr << "Could not load font: assets/Geneva.ttf\n";
         return 1;
     }
@@ -182,40 +196,62 @@ int main()
     betText.setFillColor(sf::Color::Black);
     betText.setStyle(sf::Text::Bold);
 
-    while (window.isOpen()) {
+    while (window.isOpen()) 
+    {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while (window.pollEvent(event)) 
+        {
+            if (event.type == sf::Event::Closed) 
+            {
                 window.close();
             }
 
             if (event.type == sf::Event::MouseButtonPressed &&
-                event.mouseButton.button == sf::Mouse::Left) {
+                event.mouseButton.button == sf::Mouse::Left) 
+                {
                 const sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-                if (currentScreen == Screen::MainMenu) {
-                    if (slotsPlay.contains(mousePos)) {
+                if (currentScreen == Screen::MainMenu) 
+                {
+                    if (slotsPlay.contains(mousePos)) 
+                    {
                         currentScreen = Screen::Slots;
-                    } else if (blackjackPlay.contains(mousePos)) {
+                    } 
+                    else if (blackjackPlay.contains(mousePos)) 
+                    {
                         currentScreen = Screen::Blackjack;
-                    } else if (crashPlay.contains(mousePos)) {
+                    } 
+                    else if (crashPlay.contains(mousePos)) 
+                    {
                         currentScreen = Screen::Crash;
-                    } else if (exitButton.contains(mousePos)) {
+                    } 
+                    else if (exitButton.contains(mousePos)) 
+                    {
                         window.close();
                     }
-                } else if (currentScreen == Screen::Slots) {
-                    if (backButton.contains(mousePos)) {
+                } 
+                else if (currentScreen == Screen::Slots) 
+                {
+                    if (backButton.contains(mousePos)) 
+                    {
                         currentScreen = Screen::MainMenu;
-                    } else if (betMinus.contains(mousePos)) {
+                    } 
+                    else if (betMinus.contains(mousePos)) 
+                    {
                         slotsGame.decreaseBet();
-                    } else if (betPlus.contains(mousePos)) {
+                    } 
+                    else if (betPlus.contains(mousePos)) 
+                    {
                         slotsGame.increaseBet(wallet);
-                    } else if (spinButton.contains(mousePos)) {
+                    } 
+                    else if (spinButton.contains(mousePos)) 
+                    {
                         const bool validBet = wallet.canBet(slotsGame.currentBet());
                         const int betBeforeSpin = slotsGame.currentBet();
                         SlotsResult result = slotsGame.spin(wallet, rng);
 
-                        if (validBet) {
+                        if (validBet) 
+                        {
                             reelA = result.reelA;
                             reelB = result.reelB;
                             reelC = result.reelC;
@@ -223,38 +259,53 @@ int main()
 
                         slotsMessage = resultMessageFromSpin(result, betBeforeSpin, validBet);
                     }
-                } else if (currentScreen == Screen::Blackjack) {
-                    if (backButton.contains(mousePos)) {
+                } 
+                else if (currentScreen == Screen::Blackjack) 
+                {
+                    if (backButton.contains(mousePos)) 
+                    {
                         blackjackScreen.onNavigateAway(wallet, rng);
                         currentScreen = Screen::MainMenu;
-                    } else {
+                    }
+                    else 
+                    {
                         blackjackScreen.onMouseClick(mousePos, wallet, rng);
                     }
-                } else if (currentScreen == Screen::Crash) {
-                    if (backButton.contains(mousePos)) {
+                } 
+                else if (currentScreen == Screen::Crash) 
+                {
+                    if (backButton.contains(mousePos)) 
+                    {
                         crashScreen.onNavigateAway(wallet);
                         currentScreen = Screen::MainMenu;
-                    } else {
+                    } 
+                    else 
+                    {
                         crashScreen.onMouseClick(mousePos, wallet, rng);
                     }
                 }
             }
         }
 
-        if (currentScreen == Screen::Blackjack) {
+        if (currentScreen == Screen::Blackjack) 
+        {
             blackjackScreen.update(wallet);
         }
-        if (currentScreen == Screen::Crash) {
+        if (currentScreen == Screen::Crash) 
+        {
             crashScreen.update(wallet);
         }
 
         balanceText.setString("BALANCE: " + std::to_string(wallet.balance()) + " COINS");
         centerTextInBox(balanceText, balanceBox);
 
-        if (currentScreen == Screen::Slots) {
+        if (currentScreen == Screen::Slots) 
+        {
             betText.setString("BET: " + std::to_string(slotsGame.currentBet()));
             centerTextInBox(betText, betBox);
-        } else if (currentScreen != Screen::Crash) {
+        } 
+        else if (currentScreen != Screen::Crash) 
+        {
             betText.setString("BET: " + std::to_string(slotsGame.currentBet()));
             centerTextInBox(betText, betBox);
         }
@@ -277,16 +328,20 @@ int main()
         betMinus.setFillColor(betMinus.contains(mousePos) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
         betPlus.setFillColor(betPlus.contains(mousePos) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
         spinButton.setFillColor(spinButton.contains(mousePos) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
-        if (currentScreen == Screen::Blackjack) {
+        
+        if (currentScreen == Screen::Blackjack) 
+        {
             blackjackScreen.updateHover(mousePos);
         }
-        if (currentScreen == Screen::Crash) {
+        if (currentScreen == Screen::Crash) 
+        {
             crashScreen.updateHover(mousePos);
         }
 
         window.clear(sf::Color::Black);
 
-        if (currentScreen == Screen::MainMenu) {
+        if (currentScreen == Screen::MainMenu) 
+        {
             window.draw(title);
             window.draw(subtitle);
             window.draw(balanceBox);
@@ -301,10 +356,13 @@ int main()
             crashPlay.draw(window);
             exitButton.draw(window);
 
-            if (!statusText.getString().isEmpty()) {
+            if (!statusText.getString().isEmpty()) 
+            {
                 window.draw(statusText);
             }
-        } else if (currentScreen == Screen::Slots) {
+        } 
+        else if (currentScreen == Screen::Slots) 
+        {
             {
                 constexpr float screenCx = 640.f;
                 sf::FloatRect titleB = slotsTitle.getLocalBounds();
@@ -357,12 +415,16 @@ int main()
             window.draw(betText);
             betPlus.draw(window);
             spinButton.draw(window);
-        } else if (currentScreen == Screen::Blackjack) {
+        } 
+        else if (currentScreen == Screen::Blackjack) 
+        {
             window.draw(balanceBox);
             window.draw(balanceText);
             backButton.draw(window);
             blackjackScreen.draw(window);
-        } else if (currentScreen == Screen::Crash) {
+        } 
+        else if (currentScreen == Screen::Crash) 
+        {
             window.draw(balanceBox);
             window.draw(balanceText);
             backButton.draw(window);

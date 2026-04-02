@@ -11,6 +11,8 @@
  *
  * This is used after input operations to recover from invalid input and to
  * remove any leftover characters from the input buffer.
+ *
+ * @author Raiyan
  */
 static void clearInputLine()
 {
@@ -25,6 +27,8 @@ static void clearInputLine()
  *
  * @param prompt The message shown to the user before reading input.
  * @return The validated integer entered by the user.
+ *
+ * @author Raiyan
  */
 static int readInt(const std::string& prompt) 
 {
@@ -49,6 +53,8 @@ static int readInt(const std::string& prompt)
  *
  * Uses a Mersenne Twister engine and supports either a user-provided seed or
  * a random seed from std::random_device.
+ *
+ * @author Raiyan
  */
 class RNG 
 {
@@ -57,6 +63,8 @@ public:
      * @brief Constructs the random number generator.
      *
      * @param seed Optional seed value. If not provided, a random seed is used.
+     *
+     * @author Raiyan
      */
     explicit RNG(std::optional<unsigned int> seed = std::nullopt) 
     {
@@ -77,6 +85,8 @@ public:
      * @param lo Lower bound of the range.
      * @param hi Upper bound of the range.
      * @return A random integer between lo and hi inclusive.
+     *
+     * @author Raiyan
      */
     int uniformInt(int lo, int hi) 
     {
@@ -90,6 +100,8 @@ public:
      * @param lo Lower bound of the range.
      * @param hi Upper bound of the range.
      * @return A random double in the range [lo, hi].
+     *
+     * @author Raiyan
      */
     double uniformDouble(double lo, double hi) 
     {
@@ -107,6 +119,8 @@ private:
  *
  * Provides methods for checking available funds, debiting bets,
  * and crediting winnings.
+ *
+ * @author Raiyan
  */
 class Wallet 
 {
@@ -115,6 +129,8 @@ public:
      * @brief Constructs a wallet with an initial number of coins.
      *
      * @param startingCoins Initial wallet balance.
+     *
+     * @author Raiyan
      */
     explicit Wallet(int startingCoins) : coins_(startingCoins) {}
 
@@ -122,6 +138,8 @@ public:
      * @brief Gets the current wallet balance.
      *
      * @return Current number of coins.
+     *
+     * @author Raiyan
      */
     int balance() const 
     { 
@@ -135,6 +153,8 @@ public:
      *
      * @param amount Bet amount to validate.
      * @return true if the bet is valid, false otherwise.
+     *
+     * @author Raiyan
      */
     bool canBet(int amount) const 
     {
@@ -146,6 +166,8 @@ public:
      *
      * @param amount Number of coins to deduct.
      * @return true if the debit succeeded, false if the amount was invalid.
+     *
+     * @author Raiyan
      */
     bool debit(int amount) 
     {
@@ -158,6 +180,8 @@ public:
      * @brief Adds coins to the wallet.
      *
      * @param amount Number of coins to add.
+     *
+     * @author Raiyan
      */
     void credit(int amount) 
     {
@@ -174,6 +198,8 @@ private:
  *
  * @param s Symbol identifier.
  * @return Name of the symbol as a string.
+ *
+ * @author Raiyan
  */
 static std::string symbolName(int s) 
 {
@@ -190,6 +216,8 @@ static std::string symbolName(int s)
 
 /**
  * @brief Displays the instructions for the slot machine game.
+ *
+ * @author Raiyan
  */
 static void printSlotsInstructions() 
 {
@@ -220,6 +248,8 @@ static void printSlotsInstructions()
 
 /**
  * @brief Displays the instructions for the blackjack game.
+ *
+ * @author Raiyan
  */
 static void printBlackjackInstructions() 
 {
@@ -239,6 +269,8 @@ static void printBlackjackInstructions()
 
 /**
  * @brief Displays the instructions for the rocket crash game.
+ *
+ * @author Raiyan
  */
 static void printCrashInstructions() 
 {
@@ -263,6 +295,8 @@ static void printCrashInstructions()
  *
  * @param wallet Reference to the player's wallet.
  * @return The validated bet amount, or 0 if cancelled.
+ *
+ * @author Raiyan
  */
 static int promptBet(Wallet& wallet) 
 {
@@ -290,6 +324,8 @@ static int promptBet(Wallet& wallet)
  *
  * @param rng Random number generator.
  * @return Generated symbol identifier.
+ *
+ * @author Raiyan
  */
 static int spinSymbol(RNG& rng) 
 {
@@ -308,6 +344,8 @@ static int spinSymbol(RNG& rng)
  * @param b Second slot symbol.
  * @param c Third slot symbol.
  * @return Multiplier applied to the player's bet.
+ *
+ * @author Raiyan
  */
 static int computeMultiplier(int a, int b, int c) 
 {
@@ -332,6 +370,8 @@ static int computeMultiplier(int a, int b, int c)
  *
  * @param wallet Reference to the player's wallet.
  * @param rng Random number generator.
+ *
+ * @author Raiyan
  */
 static void playSlots(Wallet& wallet, RNG& rng) 
 {
@@ -358,6 +398,8 @@ static void playSlots(Wallet& wallet, RNG& rng)
  *
  * @param wallet Reference to the player's wallet.
  * @param rng Random number generator.
+ *
+ * @author Raiyan
  */
 static void playBlackjack(Wallet& wallet, RNG& rng) 
 {
@@ -370,8 +412,8 @@ static void playBlackjack(Wallet& wallet, RNG& rng)
 
     int playerCard1 = drawCard();
     int playerCard2 = drawCard();
-    int dealerCard1 = drawCard(); // visible
-    int dealerCard2 = drawCard(); // hidden
+    int dealerCard1 = drawCard();
+    int dealerCard2 = drawCard();
 
     int playerTotal = playerCard1 + playerCard2;
     int dealerTotal = dealerCard1 + dealerCard2;
@@ -419,6 +461,8 @@ static void playBlackjack(Wallet& wallet, RNG& rng)
  *
  * @param wallet Reference to the player's wallet.
  * @param rng Random number generator.
+ *
+ * @author Raiyan
  */
 static void playCrash(Wallet& wallet, RNG& rng) 
 {
@@ -457,6 +501,8 @@ static void playCrash(Wallet& wallet, RNG& rng)
  * @brief Displays the main casino lobby menu.
  *
  * @param wallet Reference to the player's wallet for showing current balance.
+ *
+ * @author Raiyan
  */
 static void printLobby(const Wallet& wallet) 
 {
@@ -481,6 +527,8 @@ static void printLobby(const Wallet& wallet)
  * @param argc Number of command-line arguments.
  * @param argv Array of command-line argument strings.
  * @return Exit status code.
+ *
+ * @author Raiyan
  */
 int main(int argc, char** argv) 
 {

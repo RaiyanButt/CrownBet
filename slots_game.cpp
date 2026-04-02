@@ -1,34 +1,92 @@
 #include "slots_game.hpp"
 
+/**
+ * @brief Constructs a SlotsGame object with an initial bet.
+ *
+ * This constructor initializes the slot machine game and sets the
+ * starting bet amount used before spins.
+ *
+ * @param startingBet The initial bet amount.
+ *
+ * @author Daniel
+ */
 SlotsGame::SlotsGame(int startingBet)
     : currentBet_(startingBet)
 {
 }
 
+/**
+ * @brief Returns the current bet amount.
+ *
+ * This function provides the bet value that will be used for the next spin.
+ *
+ * @return The current bet amount.
+ *
+ * @author Daniel
+ */
 int SlotsGame::currentBet() const
 {
     return currentBet_;
 }
 
+/**
+ * @brief Increases the current bet amount.
+ *
+ * This function raises the bet by a fixed increment (10) as long as
+ * the resulting value does not exceed the player's wallet balance.
+ *
+ * @param wallet The player's wallet used to validate the bet.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void SlotsGame::increaseBet(const Wallet& wallet)
 {
-    if (currentBet_ + 10 <= wallet.balance()) {
+    if (currentBet_ + 10 <= wallet.balance()) 
+    {
         currentBet_ += 10;
     }
 }
 
+/**
+ * @brief Decreases the current bet amount.
+ *
+ * This function lowers the bet by a fixed amount (10), ensuring that
+ * the bet does not fall below the minimum allowed value.
+ *
+ * @return None.
+ *
+ * @author Daniel
+ */
 void SlotsGame::decreaseBet()
 {
-    if (currentBet_ > 10) {
+    if (currentBet_ > 10) 
+    {
         currentBet_ -= 10;
     }
 }
 
+/**
+ * @brief Performs a slot machine spin.
+ *
+ * This function validates the bet, deducts it from the wallet,
+ * generates three random symbols, calculates the multiplier and payout,
+ * and updates the wallet if the player wins.
+ *
+ * @param wallet The player's wallet used for betting and payouts.
+ * @param rng The random number generator used for spinning reels.
+ *
+ * @return A SlotsResult containing the outcome of the spin.
+ *
+ * @author Daniel
+ */
 SlotsResult SlotsGame::spin(Wallet& wallet, RNG& rng)
 {
     SlotsResult result;
 
-    if (!wallet.canBet(currentBet_)) {
+    if (!wallet.canBet(currentBet_)) 
+    {
         return result;
     }
 
@@ -41,17 +99,31 @@ SlotsResult SlotsGame::spin(Wallet& wallet, RNG& rng)
     result.payout = currentBet_ * result.multiplier;
     result.won = result.payout > 0;
 
-    if (result.won) {
+    if (result.won) 
+    {
         wallet.credit(result.payout);
     }
 
-    if (wallet.balance() > 0 && currentBet_ > wallet.balance()) {
+    if (wallet.balance() > 0 && currentBet_ > wallet.balance()) 
+    {
         currentBet_ = wallet.balance();
     }
 
     return result;
 }
 
+/**
+ * @brief Generates a random slot symbol.
+ *
+ * This function uses weighted probabilities to determine which symbol
+ * appears on a reel.
+ *
+ * @param rng The random number generator used for selection.
+ *
+ * @return An integer representing the selected symbol.
+ *
+ * @author Daniel
+ */
 int SlotsGame::spinSymbol(RNG& rng)
 {
     int roll = rng.uniformInt(1, 100);
@@ -62,6 +134,20 @@ int SlotsGame::spinSymbol(RNG& rng)
     return 4;
 }
 
+/**
+ * @brief Computes the payout multiplier for a spin result.
+ *
+ * This function determines the multiplier based on the combination
+ * of symbols obtained from the three reels.
+ *
+ * @param a The symbol on the first reel.
+ * @param b The symbol on the second reel.
+ * @param c The symbol on the third reel.
+ *
+ * @return The multiplier applied to the bet.
+ *
+ * @author Daniel
+ */
 int SlotsGame::computeMultiplier(int a, int b, int c)
 {
     if (a == 4 && b == 4 && c == 4) return 10;
