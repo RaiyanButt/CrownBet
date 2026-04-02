@@ -41,14 +41,19 @@ CrashScreen::CrashScreen(sf::Font& font)
     title_.setFillColor(sf::Color(255, 191, 0));
 
     subLine1_.setFont(font);
-    subLine1_.setString("Crash point is set when the round starts (like FlyX). Cash out in time.");
-    subLine1_.setCharacterSize(17);
+    subLine1_.setString("Crash point is set when you launch.");
+    subLine1_.setCharacterSize(15);
     subLine1_.setFillColor(sf::Color(205, 205, 215));
 
     subLine2_.setFont(font);
-    subLine2_.setString("Cash out before the rocket crashes.");
-    subLine2_.setCharacterSize(17);
+    subLine2_.setString("It stays fixed while the multiplier rises.");
+    subLine2_.setCharacterSize(15);
     subLine2_.setFillColor(sf::Color(205, 205, 215));
+
+    subLine3_.setFont(font);
+    subLine3_.setString("Cash out before the rocket crashes.");
+    subLine3_.setCharacterSize(15);
+    subLine3_.setFillColor(sf::Color(205, 205, 215));
 
     mult_.setFont(font);
     mult_.setCharacterSize(88);
@@ -67,6 +72,8 @@ CrashScreen::CrashScreen(sf::Font& font)
     rocket_.setPoint(0, sf::Vector2f(0.f, -42.f));
     rocket_.setPoint(1, sf::Vector2f(20.f, 26.f));
     rocket_.setPoint(2, sf::Vector2f(-20.f, 26.f));
+    // Origin at the tip so setPosition() is the tip in world space (clear gap below panel top).
+    rocket_.setOrigin(0.f, -42.f);
     rocket_.setFillColor(sf::Color(220, 85, 70));
     rocket_.setOutlineThickness(2.f);
     rocket_.setOutlineColor(sf::Color(140, 40, 35));
@@ -140,8 +147,18 @@ void CrashScreen::draw(sf::RenderWindow& window)
     };
 
     centerTextAt(title_, cx, 48.f);
-    centerTextAt(subLine1_, cx, 84.f);
-    centerTextAt(subLine2_, cx, 104.f);
+
+    constexpr float instrLeft = 152.f;
+    constexpr float instrTop = 136.f;
+    constexpr float instrLineGap = 22.f;
+    auto placeLeftInPanel = [](sf::Text& t, float leftX, float topY) {
+        const sf::FloatRect b = t.getLocalBounds();
+        t.setOrigin(0.f, b.top);
+        t.setPosition(leftX, topY);
+    };
+    placeLeftInPanel(subLine1_, instrLeft, instrTop);
+    placeLeftInPanel(subLine2_, instrLeft, instrTop + instrLineGap);
+    placeLeftInPanel(subLine3_, instrLeft, instrTop + 2.f * instrLineGap);
 
     mult_.setString(formatMultiplier(game_.multiplier()));
     centerTextAt(mult_, cx, 298.f);
@@ -153,9 +170,9 @@ void CrashScreen::draw(sf::RenderWindow& window)
         const int preview = static_cast<int>(static_cast<double>(game_.roundBet()) * game_.multiplier());
         msg = "CASH OUT now for " + std::to_string(preview) + " coins.";
     } else if (game_.lastOutcome() == CrashOutcome::CashedOut) {
-        msg = "Cashed at " + formatMultiplier(game_.multiplier()) + " — +" + std::to_string(game_.lastPayout()) + " coins.";
+        msg = "Cashed at " + formatMultiplier(game_.multiplier()) + " - +" + std::to_string(game_.lastPayout()) + " coins.";
     } else {
-        msg = "Crashed at " + formatMultiplier(game_.crashPoint()) + " — bet lost.";
+        msg = "Crashed at " + formatMultiplier(game_.crashPoint()) + " - bet lost.";
     }
     status_.setString(msg);
     centerTextAt(status_, cx, 396.f);
@@ -170,7 +187,9 @@ void CrashScreen::draw(sf::RenderWindow& window)
     window.draw(title_);
     window.draw(subLine1_);
     window.draw(subLine2_);
-    rocket_.setPosition(640.f, 176.f);
+    window.draw(subLine3_);
+    // Panel top y=128, ~4px gold stroke; keep tip clearly below inner edge (~22px gap).
+    rocket_.setPosition(cx, 158.f);
     window.draw(rocket_);
     window.draw(mult_);
     window.draw(status_);
