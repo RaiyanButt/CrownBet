@@ -29,16 +29,7 @@ A C++ desktop casino app built with SFML where players wager **crowns** across m
 Run the following from the project root:
 
 ```bash
-g++ -std=c++17 -Wall -Wextra \
-  main.cpp casino.cpp button.cpp \
-  crash_game.cpp crash_screen.cpp \
-  blackjack_screen.cpp blackjack_game.cpp \
-  rng.cpp \
-  slots_game.cpp slots_render.cpp \
-  -I/opt/homebrew/opt/sfml@2/include \
-  -L/opt/homebrew/opt/sfml@2/lib \
-  -lsfml-graphics -lsfml-window -lsfml-system \
-  -o casino
+g++ -std=c++17 -Wall -Wextra main.cpp button.cpp crash_game.cpp crash_screen.cpp blackjack_screen.cpp blackjack_game.cpp rng.cpp slots_game.cpp slots_render.cpp -I/opt/homebrew/opt/sfml@2/include -L/opt/homebrew/opt/sfml@2/lib -lsfml-graphics -lsfml-window -lsfml-system -o casino
 ```
 
 ### Running
@@ -81,6 +72,22 @@ GROUP35/
 - 🃏 **Blackjack** — Classic card game against the house
 - 📜 **Rulesets** — In-app rules screen for each game
 - 🎲 **Custom RNG** — Dedicated random number generation module
+
+---
+
+## 📸 Screenshots
+
+### Main Menu
+![Main Menu](screenshots/mainmenu.png)
+
+### Slots
+![Slots](screenshots/slots.png)
+
+### Blackjack
+![Blackjack](screenshots/blackjack.png)
+
+### Crash
+![Crash](screenshots/crash.png)
 
 ---
 
