@@ -4,6 +4,7 @@
 
 #include "app_types.hpp"
 #include "button.hpp"
+#include "blackjack_screen.hpp"
 #include "crash_screen.hpp"
 #include "rng.hpp"
 #include "slots_game.hpp"
@@ -24,6 +25,7 @@ int main()
     RNG rng;
     Wallet wallet(1000);
     SlotsGame slotsGame(50);
+    BlackjackScreen blackjackScreen(font);
     CrashScreen crashScreen(font);
     Screen currentScreen = Screen::MainMenu;
 
@@ -66,15 +68,14 @@ int main()
     Button blackjackPlay({140.f, 50.f}, {160.f, 420.f}, sf::Color(255, 191, 0), "PLAY", font, 28);
     Button slotsPlay({140.f, 50.f}, {570.f, 420.f}, sf::Color(255, 191, 0), "PLAY", font, 28);
     Button crashPlay({140.f, 50.f}, {980.f, 420.f}, sf::Color(255, 191, 0), "PLAY", font, 28);
-    Button rulesButton({320.f, 70.f}, {280.f, 580.f}, sf::Color::Green, "VIEW RULES", font, 30);
-    Button exitButton({320.f, 70.f}, {680.f, 580.f}, sf::Color::Red, "EXIT", font, 30);
+    Button exitButton({320.f, 70.f}, {480.f, 580.f}, sf::Color::Red, "EXIT", font, 30);
 
     sf::Text statusText;
     statusText.setFont(font);
     statusText.setCharacterSize(26);
     statusText.setFillColor(sf::Color::White);
     statusText.setPosition(40.f, 665.f);
-    statusText.setString("Click SLOTS to open the working slot machine.");
+    statusText.setString("");
 
     sf::Text slotsTitle;
     slotsTitle.setFont(font);
@@ -196,11 +197,9 @@ int main()
                     if (slotsPlay.contains(mousePos)) {
                         currentScreen = Screen::Slots;
                     } else if (blackjackPlay.contains(mousePos)) {
-                        statusText.setString("Blackjack screen not added yet.");
+                        currentScreen = Screen::Blackjack;
                     } else if (crashPlay.contains(mousePos)) {
                         currentScreen = Screen::Crash;
-                    } else if (rulesButton.contains(mousePos)) {
-                        statusText.setString("Rules screen not added yet.");
                     } else if (exitButton.contains(mousePos)) {
                         window.close();
                     }
@@ -224,6 +223,13 @@ int main()
 
                         slotsMessage = resultMessageFromSpin(result, betBeforeSpin, validBet);
                     }
+                } else if (currentScreen == Screen::Blackjack) {
+                    if (backButton.contains(mousePos)) {
+                        blackjackScreen.onNavigateAway(wallet, rng);
+                        currentScreen = Screen::MainMenu;
+                    } else {
+                        blackjackScreen.onMouseClick(mousePos, wallet, rng);
+                    }
                 } else if (currentScreen == Screen::Crash) {
                     if (backButton.contains(mousePos)) {
                         crashScreen.onNavigateAway(wallet);
@@ -235,6 +241,9 @@ int main()
             }
         }
 
+        if (currentScreen == Screen::Blackjack) {
+            blackjackScreen.update(wallet);
+        }
         if (currentScreen == Screen::Crash) {
             crashScreen.update(wallet);
         }
@@ -262,13 +271,15 @@ int main()
         slotsPlay.setFillColor(slotsPlay.contains(mousePos) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
         blackjackPlay.setFillColor(blackjackPlay.contains(mousePos) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
         crashPlay.setFillColor(crashPlay.contains(mousePos) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
-        rulesButton.setFillColor(rulesButton.contains(mousePos) ? sf::Color(50, 255, 50) : sf::Color::Green);
         exitButton.setFillColor(exitButton.contains(mousePos) ? sf::Color(255, 80, 80) : sf::Color::Red);
 
         backButton.setFillColor(backButton.contains(mousePos) ? sf::Color(210, 210, 218) : sf::Color(175, 175, 182));
         betMinus.setFillColor(betMinus.contains(mousePos) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
         betPlus.setFillColor(betPlus.contains(mousePos) ? sf::Color(255, 255, 255) : sf::Color(220, 220, 220));
         spinButton.setFillColor(spinButton.contains(mousePos) ? sf::Color(255, 210, 60) : sf::Color(255, 191, 0));
+        if (currentScreen == Screen::Blackjack) {
+            blackjackScreen.updateHover(mousePos);
+        }
         if (currentScreen == Screen::Crash) {
             crashScreen.updateHover(mousePos);
         }
@@ -288,10 +299,11 @@ int main()
             blackjackPlay.draw(window);
             slotsPlay.draw(window);
             crashPlay.draw(window);
-            rulesButton.draw(window);
             exitButton.draw(window);
 
-            window.draw(statusText);
+            if (!statusText.getString().isEmpty()) {
+                window.draw(statusText);
+            }
         } else if (currentScreen == Screen::Slots) {
             {
                 constexpr float screenCx = 640.f;
@@ -345,6 +357,11 @@ int main()
             window.draw(betText);
             betPlus.draw(window);
             spinButton.draw(window);
+        } else if (currentScreen == Screen::Blackjack) {
+            window.draw(balanceBox);
+            window.draw(balanceText);
+            backButton.draw(window);
+            blackjackScreen.draw(window);
         } else if (currentScreen == Screen::Crash) {
             window.draw(balanceBox);
             window.draw(balanceText);

@@ -23,6 +23,7 @@ private:
     sf::Text title_;
     sf::Text subLine1_;
     sf::Text subLine2_;
+    sf::Text subLine3_;
     sf::Text mult_;
     sf::Text status_;
     sf::Text betLabel_;

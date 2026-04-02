@@ -11,6 +11,8 @@
           "button.cpp",
           "slots_game.cpp",
           "slots_render.cpp",
+          "blackjack_game.cpp",
+          "blackjack_screen.cpp",
           "crash_game.cpp",
           "crash_screen.cpp",
           "-o",
