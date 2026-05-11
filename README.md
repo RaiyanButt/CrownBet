@@ -90,6 +90,3 @@ GROUP35/
 
 ---
 
-## 👥 Authors
-
-CS3307 Group 35 — Western University
